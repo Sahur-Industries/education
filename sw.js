@@ -43,3 +43,19 @@ addEventListener("fetch", (e) => {
     e.respondWith($scramjetController.route(e));
   }
 });
+
+// Take control of already-open documents on first install, so a fresh
+// visit is proxied immediately instead of waiting for a navigation.
+// Harmless where the controller bundle manages its own lifecycle — claim
+// only affects documents under this worker's scope.
+addEventListener("activate", (e) => {
+  e.waitUntil(
+    (async () => {
+      try {
+        await self.clients.claim();
+      } catch {
+        // Older browsers proceed uncontrolled; callers reload once.
+      }
+    })(),
+  );
+});
