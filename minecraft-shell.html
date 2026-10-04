@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Minecraft</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; }
+  /* Sits behind the frame: visible until the game paints, no JS needed. */
+  .loading {
+    position: fixed; inset: 0; display: flex; align-items: center;
+    justify-content: center; color: #c97a1f;
+    font: 16px/1.4 system-ui, sans-serif;
+  }
+  iframe {
+    position: fixed; inset: 0; border: 0; width: 100vw; height: 100vh;
+    display: block;
+  }
+</style>
+</head>
+<body>
+<div class="loading">Loading Minecraft…</div>
+<!-- Absolute on purpose: under a proxy the page URL is the embed endpoint,
+     so a relative src would resolve against the proxy, not the game host. -->
+<iframe src="https://sahur-education.hyperfrog7.workers.dev/minecraft.html"
+        sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-forms"
+        allow="fullscreen; autoplay; gamepad" allowfullscreen></iframe>
+<script>
+  // Confirm before the tab closes so an accidental click doesn't lose
+  // progress. Browsers show their own generic prompt; custom text is ignored.
+  window.addEventListener("beforeunload", function (e) {
+    e.preventDefault();
+    e.returnValue = "";
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+# Workers Static Assets honors this like Pages does. The game shells are
+# fetched cross-origin by SVG copies hosted elsewhere (jsDelivr), and fetch
+# needs an explicit opt-in — plain iframe embedding does not. This host
+# serves only public static assets (the AI gateway 404s here), so a blanket
+# allow-origin exposes nothing private.
+#
+# NOTE: .html requests 307-redirect to extensionless paths (/x.html -> /x),
+# so per-path rules would miss the final 200 that CORS is actually checked
+# against. The blanket rule covers both hops.
+/*
+  Access-Control-Allow-Origin: *
+
+# The published SVGs are ~3MB of inlined JS and every load used to revalidate
+# them: with the default `max-age=0, must-revalidate` the browser spends a full
+# round trip on a conditional GET before any bytes flow, which lands straight
+# on the measured first-paint time. Five minutes skips that revalidation for
+# repeat visits; it is deliberately not longer, so a deploy rolls out quickly.
+# The in-page badge prints the build commit, so a copy served from just before
+# a deploy is identifiable rather than mysterious.
+#
+# Same-origin fetches (the Scramjet siblings these load by relative path) still
+# read fresh off the edge via s-maxage, so only browsers hold on for five.
+/public.svg
+  Cache-Control: public, max-age=300, s-maxage=604800
+
+/proxy.svg
+  Cache-Control: public, max-age=300, s-maxage=604800
+
+/browse.svg
+  Cache-Control: public, max-age=300, s-maxage=604800
